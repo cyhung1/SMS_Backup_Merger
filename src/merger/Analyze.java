@@ -17,10 +17,6 @@ public class Analyze {
 
 	private static final XMLInputFactory XMLINFACTORY = XMLInputFactory.newInstance();
 
-	public Analyze() {
-
-	}
-
 	public void gatherInfo(File fileToAnaylze) {
 		if (fileToAnaylze == null) return;
 
@@ -51,6 +47,11 @@ public class Analyze {
 		}
 	}
 
+	/**
+	 * Compare file contents of 2 xml sms files
+	 * @param firstFile First xml sms file to compare
+	 * @param secondFile Second xml sms file to compare 
+	 */
 	public void compare(File firstFile, File secondFile) {
 		if (firstFile == null || secondFile == null) return;
 
@@ -62,6 +63,11 @@ public class Analyze {
 		findDifferences(firstFileContent, secondFileContent);
 	}
 
+	/**
+	 * Helper for compare method to collect all sms elements in a file and store them in an arraylist
+	 * @param file File that all sms elements will be gathered from
+	 * @return An arraylist containing the whole sms string as a full string
+	 */
 	private ArrayList<String> gatherFileContents(File file) {
 		ArrayList<String> fileContent = new ArrayList<String>();
 
@@ -88,6 +94,11 @@ public class Analyze {
 		return fileContent;
 	}
 
+	/**
+	 * Helper for compare method to compare 2 arraylists together to find the differences
+	 * @param list1 First arraylist to compare
+	 * @param list2 Second arraylist to compare
+	 */
 	private void findDifferences(ArrayList<String> list1, ArrayList<String> list2) {
 		for (int i = 0; i < Math.min(list1.size(), list2.size()); i++) {
 			if (!list1.get(i).equals(list2.get(i))) {
