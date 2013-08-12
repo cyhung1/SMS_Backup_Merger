@@ -4,7 +4,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.ArrayList;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -14,13 +16,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class FrontEnd {
 
 	private static final JFileChooser CHOOSER = new JFileChooser();
-	private static final Analyze ANALYZE = new Analyze();
+	private static final Read READ = new Read();
+	private static final Write WRITE = new Write();
 	private JFrame frame = new JFrame();
 	private JButton selectFirstFile, selectSecondFile;
+	private JButton analyze1, analyze2;
 	private File file1, file2;
-	private JButton analyze, compare;
-	private JButton merge;
-	private JButton about;
+	private JButton compare, merge, about;
+	private JCheckBox mergeTo1, mergeTo2, mergeToArchive;
 
 	public FrontEnd() {
 		createGUI();
@@ -29,21 +32,33 @@ public class FrontEnd {
 	}
 
 	private void createGUI() {
-		JPanel main = new JPanel(new GridLayout(6, 1));
+		JPanel main = new JPanel(new GridLayout(8, 1));
+		JPanel file1 = new JPanel(new GridLayout(1, 2));
+		JPanel file2 = new JPanel(new GridLayout(1, 2));
 
 		selectFirstFile = new JButton("File 1");
 		selectSecondFile = new JButton("File 2");
-		analyze = new JButton("Analyze");
+		analyze1 = new JButton("Analyze");
+		analyze2 = new JButton("Analyze");
 		compare = new JButton("Compare");
 		merge = new JButton("Merge");
 		about = new JButton("About");
+		mergeTo1 = new JCheckBox("Merge into File 1");
+		mergeTo2 = new JCheckBox("Merge into File 2");
+		mergeToArchive = new JCheckBox("Merge into \"The Archive\"");
 
-		main.add(selectFirstFile);
-		main.add(selectSecondFile);
-		main.add(analyze);
+		file1.add(selectFirstFile);
+		file1.add(analyze1);
+		file2.add(selectSecondFile);
+		file2.add(analyze2);
+		main.add(file1);
+		main.add(file2);
 		main.add(compare);
 		main.add(merge);
 		main.add(about);
+		main.add(mergeTo1);
+		main.add(mergeTo2);
+		main.add(mergeToArchive);
 
 		frame.add(main);
 	}
@@ -58,6 +73,7 @@ public class FrontEnd {
 							System.out.println("You selected the same file!");
 						} else {
 							file1 = CHOOSER.getSelectedFile();
+							analyze1.setEnabled(true);
 						}
 
 					}
@@ -67,20 +83,33 @@ public class FrontEnd {
 							System.out.println("You selected the same file!");
 						} else {
 							file2 = CHOOSER.getSelectedFile();
+							analyze2.setEnabled(true);
 						}
 					}
 				}
+
+				if (analyze1.isEnabled() && analyze2.isEnabled()) {
+					compare.setEnabled(true);
+					merge.setEnabled(true);
+				}
+
 			}
 		};
 		selectFirstFile.addActionListener(selectFileListener);
 		selectSecondFile.addActionListener(selectFileListener);
 
-		analyze.addActionListener(new ActionListener() {
+		ActionListener analyzeListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				analyzeFile(file1);
+				if (e.getSource().equals(analyze1)) {
+					analyzeFile(file1);
+				} else if (e.getSource().equals(analyze2)) {
+					analyzeFile(file2);
+				}
 			}
-		});
+		};
+		analyze1.addActionListener(analyzeListener);
+		analyze2.addActionListener(analyzeListener);
 
 		compare.addActionListener(new ActionListener() {
 			@Override
@@ -93,12 +122,17 @@ public class FrontEnd {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				ArrayList<String> temp1 = READ.gatherFileContents(file1);
+				ArrayList<String> temp2 = READ.gatherFileContents(file2);
+				WRITE.mergeToArchive(temp1, temp2);;
+				//WRITE.mergeToArchive(READ.gatherFileContents(file1), READ.gatherFileContents(file2));
 			}
 		});
+
 		about.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
+				// TODO Create dialog with info in it or get rid of this button
 			}
 		});
 
@@ -110,6 +144,18 @@ public class FrontEnd {
 		CHOOSER.setFileSelectionMode(JFileChooser.FILES_ONLY); // Only files
 		CHOOSER.setCurrentDirectory(new File(System.getProperty("user.home")));
 
+		analyze1.setEnabled(false);
+		analyze2.setEnabled(false);
+		compare.setEnabled(false);
+		//merge.setEnabled(false);
+
+		mergeTo1.setEnabled(false);
+		mergeTo2.setEnabled(false);
+		mergeToArchive.setEnabled(false);
+		mergeToArchive.setSelected(true);
+		
+
+		frame.setTitle(System.getProperty("user.name") + " :: " + getClass().getName().substring(0, 6));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null); // Center of screen
 		frame.pack();
@@ -117,11 +163,11 @@ public class FrontEnd {
 	}
 
 	private void analyzeFile(File fileToAnalyze) {
-		ANALYZE.gatherInfo(fileToAnalyze);
+		READ.gatherInfo(fileToAnalyze);
 	}
-	
+
 	private void compareFile(File firstFile, File secondFile) {
-		ANALYZE.compare(firstFile, secondFile);
+		READ.compare(firstFile, secondFile);
 	}
 
 	public static void main(String[] args) {
