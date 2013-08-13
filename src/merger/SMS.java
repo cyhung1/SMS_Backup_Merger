@@ -76,11 +76,11 @@ public class SMS {
 		this.sc_toa = sc_toa;
 	}
 
-	public String getService_center() {
+	public String getService_Center() {
 		return service_center;
 	}
 
-	public void setService_center(String service_center) {
+	public void setService_Center(String service_center) {
 		this.service_center = service_center;
 	}
 
@@ -108,34 +108,34 @@ public class SMS {
 		this.locked = locked;
 	}
 
-	public String getDate_sent() {
+	public String getDate_Sent() {
 		return date_sent;
 	}
 
-	public void setDate_sent(String date_sent) {
+	public void setDate_Sent(String date_sent) {
 		this.date_sent = date_sent;
 	}
 
-	public String getReadable_date() {
+	public String getReadable_Date() {
 		return readable_date;
 	}
 
-	public void setReadable_date(String readable_date) {
+	public void setReadable_Date(String readable_date) {
 		this.readable_date = readable_date;
 	}
 
-	public String getContact_name() {
+	public String getContact_Name() {
 		return contact_name;
 	}
 
-	public void setContact_name(String contact_name) {
+	public void setContact_Name(String contact_name) {
 		this.contact_name = contact_name;
 	}
 
 	public String toString() {
-		return "Protocol: " + protocol + "address: " + address + "date: " + date + "type: " + type + "subject: "
-				+ subject + "body: " + body + "toa: " + toa + "sc_toa: " + sc_toa + "service_center: " + service_center
-				+ "read: " + read + "status: " + status + "locked: " + locked + "date_sent: " + date_sent
-				+ "readable_date: " + readable_date + "contact_name: " + contact_name;
+		return "Protocol: " + protocol + " address: " + address + " date: " + date + " type: " + type + " subject: "
+				+ subject + " body: " + body + " toa: " + toa + " sc_toa: " + sc_toa + " service_center: " + service_center
+				+ " read: " + read + " status: " + status + " locked: " + locked + " date_sent: " + date_sent
+				+ " readable_date: " + readable_date + " contact_name: " + contact_name;
 	}
 }
