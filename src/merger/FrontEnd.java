@@ -42,7 +42,6 @@ public class FrontEnd {
 		main.add(compare);
 		main.add(merge);
 
-		
 		frame.add(main);
 	}
 
@@ -53,7 +52,8 @@ public class FrontEnd {
 			public void actionPerformed(ActionEvent e) {
 				if (CHOOSER.showOpenDialog(selectFile) == JFileChooser.APPROVE_OPTION) {
 					files = CHOOSER.getSelectedFiles();
-					if (DEBUG) System.out.println("You selected: " + files.length + " files --> " + Arrays.toString(files));
+					if (DEBUG) System.out.println("DEBUG: You selected: " + files.length + " files --> "
+							+ Arrays.toString(files));
 					compare.setEnabled(true);
 					merge.setEnabled(true);
 				}
@@ -63,14 +63,14 @@ public class FrontEnd {
 		compare.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				compareFiles(files[0], files[1]);
+				compareFiles(files);
 			}
 		});
 
 		merge.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mergeFiles(files[0], files[1]);
+				mergeFiles(files);
 			}
 		});
 
@@ -82,10 +82,10 @@ public class FrontEnd {
 		CHOOSER.setFileSelectionMode(JFileChooser.FILES_ONLY); // Only files
 		CHOOSER.setCurrentDirectory(new File(System.getProperty("user.home")));
 		CHOOSER.setMultiSelectionEnabled(true); // Allow multiple file selection
-		
+
 		compare.setEnabled(false);
 		merge.setEnabled(false);
-		
+
 		frame.setTitle(System.getProperty("user.name") + " :: " + getClass().getName().substring(0, 6));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null); // Center of screen
@@ -93,13 +93,12 @@ public class FrontEnd {
 		frame.setVisible(true);
 	}
 
-	private void compareFiles(File firstFile, File secondFile) {
-		READ.compare(firstFile, secondFile);
+	private void compareFiles(File[] listOfFiles) {
+		READ.compare(listOfFiles);
 	}
 
-	private void mergeFiles(File firstFile, File secondFile) {
-		//Merge needs to combine two files, not two array lists
-		WRITE.mergeToArchive(READ.gatherFileContents(firstFile), READ.gatherFileContents(secondFile));
+	private void mergeFiles(File[] listOfFiles) {
+		WRITE.mergeToArchive(listOfFiles);
 	}
 
 	public static void main(String[] args) {
