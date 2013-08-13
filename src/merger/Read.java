@@ -7,7 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import javax.xml.namespace.QName;
+import java.util.Iterator;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -21,45 +21,6 @@ public class Read {
 	private static final XMLInputFactory XMLINFACTORY = XMLInputFactory.newInstance();
 
 	/**
-	 * Currently spits out the body of the sms to the console
-	 * 
-	 * @param fileToAnaylze
-	 *            File that is going to be analyzed
-	 */
-	public void gatherInfo(File fileToAnaylze) {
-		if (fileToAnaylze == null) return;
-
-		try {
-			XMLEventReader eventReader = XMLINFACTORY.createXMLEventReader(new FileInputStream(fileToAnaylze));
-
-			while (eventReader.hasNext()) {
-
-				XMLEvent event = eventReader.nextEvent();
-				if (event.isStartElement()) {
-					StartElement startElement = event.asStartElement();
-					if (startElement.getName().getLocalPart() == "smses") { // Get count value
-						Attribute count = startElement.getAttributeByName(new QName("count"));
-						System.out.println("Count value: " + count.getValue());
-						//					} else if (startElement.getName().getLocalPart() == "sms") {
-						//						Iterator<?> attributes = startElement.getAttributes();
-						//						while (attributes.hasNext()) {
-						//							Attribute attribute = (Attribute) attributes.next();
-						//							if (attribute.getName().getLocalPart() == "body") System.out.println(attribute.getValue());
-						//						}
-					}
-				}
-			}
-
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XMLStreamException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	/**
 	 * Compare file contents of 2 xml sms files
 	 * 
 	 * @param firstFile
@@ -67,15 +28,111 @@ public class Read {
 	 * @param secondFile
 	 *            Second xml sms file to compare
 	 */
-	public void compare(File firstFile, File secondFile) {
-		if (firstFile == null || secondFile == null) return;
+	public void compare(File[] listOfFiles) {
+		if (!(listOfFiles.length > 0)) return; // Files must exist
 
-		// Read files
-		ArrayList<String> firstFileContent = gatherFileContents(firstFile);
-		ArrayList<String> secondFileContent = gatherFileContents(secondFile);
+		for (File f : listOfFiles) { // Files must not be null
+			if (f == null) return;
+		}
 
-		// Compare files
-		findDifferences(firstFileContent, secondFileContent);
+		//TODO info gathered might need to be displayed in a JDialog instead of system console
+		ArrayList<SMS> list = new ArrayList<SMS>();
+		for (File f : listOfFiles) {
+			list = createSmsNodes(f);
+		}
+
+		for (SMS sms : list) {
+			System.out.println(sms);
+		}
+		
+	}
+
+	/**
+	 * Take xml file and parse all the sms nodes in it into a sms object and
+	 * store them in an arraylist
+	 * 
+	 * @param xmlFile
+	 *            passed in xml file
+	 * @return list of sms nodes
+	 */
+	private ArrayList<SMS> createSmsNodes(File xmlFile) {
+		ArrayList<SMS> smsList = new ArrayList<SMS>();
+		try {
+			XMLEventReader eventReader = XMLINFACTORY.createXMLEventReader(new FileInputStream(xmlFile));
+
+			while (eventReader.hasNext()) {
+				XMLEvent event = eventReader.nextEvent();
+				if (event.isStartElement()) {
+					StartElement startElement = event.asStartElement();
+					if (startElement.getName().getLocalPart() == "sms") { // Get sms node
+						SMS sms = new SMS();
+						Iterator<?> attributes = startElement.getAttributes();
+						while (attributes.hasNext()) {
+							Attribute attribute = (Attribute) attributes.next();
+							System.out.println(attribute.getName().toString() + " --> " + attribute.getValue());
+							switch (attribute.getName().toString()) {
+							case "protocol":
+								sms.setProtocol(attribute.getValue());
+								break;
+							case "address":
+								sms.setAddress(attribute.getValue());
+								break;
+							case "date":
+								sms.setDate(attribute.getValue());
+								break;
+							case "type":
+								sms.setType(attribute.getValue());
+								break;
+							case "subject":
+								sms.setSubject(attribute.getValue());
+								break;
+							case "body":
+								sms.setBody(attribute.getValue());
+								break;
+							case "toa":
+								sms.setToa(attribute.getValue());
+								break;
+							case "sc_toa":
+								sms.setSc_toa(attribute.getValue());
+								break;
+							case "service_center":
+								sms.setService_Center(attribute.getValue());
+								break;
+							case "read":
+								sms.setRead(attribute.getValue());
+								break;
+							case "status":
+								sms.setStatus(attribute.getValue());
+								break;
+							case "locked": // Not always included
+								sms.setLocked(attribute.getValue());
+								break;
+							case "date_sent": // Not always included
+								sms.setDate_Sent(attribute.getValue());
+								break;
+							case "readable_date": // Optional
+								sms.setReadable_Date(attribute.getValue());
+								break;
+							case "contact_name": // Optional
+								sms.setContact_Name(attribute.getValue());
+								break;
+							}
+						}
+						smsList.add(sms);
+					}
+				}
+			}
+		} catch (FileNotFoundException e) {
+			System.err.println("ERROR: Could not find file being passed in!");
+			System.err.println("ERROR MESSAGE: " + e.getMessage());
+			e.printStackTrace();
+		} catch (XMLStreamException e) {
+			System.err.println("ERROR: Could not read from XML input stream!");
+			System.err.println("ERROR MESSAGE: " + e.getMessage());
+			e.printStackTrace();
+		}
+
+		return smsList;
 	}
 
 	/**
@@ -94,71 +151,23 @@ public class Read {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			reader.readLine(); // Skip XML Version
 			reader.readLine(); // Skip XML Style Sheet
-			line = reader.readLine(); // SMS Count
+			line = reader.readLine(); // Skip SMS Count
 
 			while (!(line = reader.readLine()).contains("</smses>")) {
 				fileContent.add(line);
-				System.out.println("1) Added " + line);
 			}
 			reader.close();
 
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.err.println("ERROR: Could not find file being passed in!");
+			System.err.println("ERROR MESSAGE: " + e.getMessage());
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.err.println("ERROR: Could not read from file input stream!");
+			System.err.println("ERROR MESSAGE: " + e.getMessage());
 			e.printStackTrace();
 		}
 
-		//		try {
-		//			XMLEventReader eventReader = XMLINFACTORY.createXMLEventReader(new FileInputStream(file));
-		//
-		//			while (eventReader.hasNext()) {
-		//				XMLEvent event = eventReader.nextEvent();
-		//				if (event.isStartElement()) {
-		//					StartElement startElement = event.asStartElement();
-		//					if (startElement.getName().getLocalPart().equals("sms")) {
-		//						fileContent.add(event.toString());
-		//					}
-		//				}
-		//			}
-		//		} catch (FileNotFoundException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		} catch (XMLStreamException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
-
-		System.out.println("made it to end of gather contents of " + file.getName());
 		return fileContent;
-	}
-
-	/**
-	 * Helper for compare method to compare 2 arraylists together to find the
-	 * differences
-	 * 
-	 * @param list1
-	 *            First arraylist to compare
-	 * @param list2
-	 *            Second arraylist to compare
-	 */
-	private void findDifferences(ArrayList<String> list1, ArrayList<String> list2) {
-		int numDifferences = 0;
-		int numSame = 0;
-		//int numUnique = 0;
-
-		for (int i = 0; i < Math.max(list1.size(), list2.size()); i++) {
-			if (list1.get(i).equals(list2.get(i))) {
-				numSame++;
-			} else if (!list1.get(i).equals(list2.get(i))) {
-				numDifferences++;
-				System.out.println("File 1: " + list1.get(i));
-				System.out.println("File 2: " + list2.get(i));
-			}
-
-		}
-		System.out.println("Found " + numSame + " duplicates");
-		System.out.println("Found " + numDifferences + " differences");
 	}
 }
