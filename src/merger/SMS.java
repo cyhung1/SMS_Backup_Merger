@@ -132,6 +132,7 @@ public class SMS {
 		this.contact_name = contact_name;
 	}
 	
+	@Override
 	public String toString() {
 		return "Protocol: " + protocol + " address: " + address + " date: " + date + " type: " + type + " subject: "
 				+ subject + " body: " + body + " toa: " + toa + " sc_toa: " + sc_toa + " service_center: "
