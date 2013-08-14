@@ -32,7 +32,7 @@ public class FrontEnd {
 	}
 
 	private void createGUI() {
-		JPanel main = new JPanel(new GridLayout(10, 1));
+		JPanel main = new JPanel(new GridLayout(3, 1));
 
 		selectFile = new JButton("Select File(s)");
 		compare = new JButton("Compare");
@@ -70,7 +70,17 @@ public class FrontEnd {
 		merge.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mergeFiles(files);
+				File saveFile = null;
+
+				if (CHOOSER.showSaveDialog(merge) == JFileChooser.APPROVE_OPTION) {
+					if (CHOOSER.getSelectedFile() != null) {
+						saveFile = CHOOSER.getSelectedFile();
+					}
+					if (DEBUG) System.out.println("DEBUG: Save to : " + saveFile.toPath());
+					if (DEBUG) System.out.println("DEBUG: Does save file exist?: " + saveFile.exists());
+				}
+
+				mergeFiles(files, saveFile);
 			}
 		});
 
@@ -97,8 +107,8 @@ public class FrontEnd {
 		READ.compare(listOfFiles);
 	}
 
-	private void mergeFiles(File[] listOfFiles) {
-		WRITE.mergeToArchive(listOfFiles);
+	private void mergeFiles(File[] listOfFiles, File fileToSaveTo) {
+		WRITE.mergeToArchive(listOfFiles, fileToSaveTo);
 	}
 
 	public static void main(String[] args) {
