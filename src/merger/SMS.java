@@ -131,11 +131,23 @@ public class SMS {
 	public void setContact_Name(String contact_name) {
 		this.contact_name = contact_name;
 	}
-
+	
 	public String toString() {
 		return "Protocol: " + protocol + " address: " + address + " date: " + date + " type: " + type + " subject: "
-				+ subject + " body: " + body + " toa: " + toa + " sc_toa: " + sc_toa + " service_center: " + service_center
-				+ " read: " + read + " status: " + status + " locked: " + locked + " date_sent: " + date_sent
-				+ " readable_date: " + readable_date + " contact_name: " + contact_name;
+				+ subject + " body: " + body + " toa: " + toa + " sc_toa: " + sc_toa + " service_center: "
+				+ service_center + " read: " + read + " status: " + status + " locked: " + locked + " date_sent: "
+				+ date_sent + " readable_date: " + readable_date + " contact_name: " + contact_name;
+	}
+
+	/**
+	 * Returns a string with all the sms content to be written to file
+	 * 
+	 * @return formatted string in the format writing to file
+	 */
+	public String toFileString() {
+		return "<sms protocol=\"" + protocol + "\" address=\"" + address + "\" date=\"" + date + "\" type=\"" + type
+				+ "\" subject=\"" + subject + "\" body=\"" + body + "\" toa=\"" + toa + "\" sc_toa=\"" + sc_toa + "\" service_center=\""
+				+ service_center + "\" read=\"" + read + "\" status=\"" + status + "\" locked=\"" + locked
+				+ "\" date_sent=\"" + date_sent + "\" readable_date=\"" + readable_date + "\" contact_name=\"" + contact_name + "\" />";
 	}
 }
