@@ -7,8 +7,10 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Set;
+import java.util.TreeSet;
+import java.util.logging.Logger;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -16,9 +18,10 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-
 public class ReadWrite {
+	private final static Logger LOG = Logger.getLogger(ReadWrite.class.getName()); 
 
+	
 	/**
 	 * --------------------------------- Read ---------------------------------
 	 */
@@ -151,15 +154,41 @@ public class ReadWrite {
 		return sms;
 	}
 
+	private TreeSet<SMS> sortSMS(ArrayList<SMS> unsortedList) {
+		TreeSet<SMS> sortedList = new TreeSet<>(new Comparator<SMS>() {
+			@Override
+			public int compare(SMS first, SMS second) {
+				int ret = first.getDate().compareTo(second.getDate());
+				if (ret == 0) ret = first.getBody().compareTo(second.getBody());
+				return ret;
+			}
+		});
+
+		for (SMS s : unsortedList) {
+			sortedList.add(s);
+		}
+
+		return sortedList;
+	}
+
 	/**
 	 * --------------------------------- Write ---------------------------------
 	 */
 
 	public void mergeToArchive(File[] listOfFiles, File fileToSaveTo) {
+		ArrayList<SMS> fullList = new ArrayList<SMS>();
+		TreeSet<SMS> fullSortedList = new TreeSet<SMS>();
+		
+		for (File f : listOfFiles) {
+			fullList.addAll(gatherSMSFromFile(f));
+		}
+		
+		fullSortedList = sortSMS(fullList);
 
+		writeToFile(fullSortedList);
 	}
 
-	private void writeToFile(Set<String> content) {
+	private void writeToFile(TreeSet<SMS> list) {
 		try {
 
 			File archive = new File(System.getProperty("user.home") + File.separator + "archive.xml");
@@ -170,11 +199,11 @@ public class ReadWrite {
 
 			writer.write("<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>\n");
 			writer.write("<?xml-stylesheet type=\"text/xsl\" href=\"sms.xsl\"?>\n");
-			writer.write("<smses count=\"" + content.size() + "\">\n");
+			writer.write("<smses count=\"" + list.size() + "\">\n");
 
-			Iterator<String> iterator = content.iterator();
+			Iterator<SMS> iterator = list.iterator();
 			while (iterator.hasNext()) {
-				writer.write(iterator.next());
+				writer.write(iterator.next().toFileString());
 				writer.newLine();
 			}
 
@@ -182,7 +211,7 @@ public class ReadWrite {
 
 			writer.close();
 
-			System.out.println("done merging");
+			LOG.info("Files Merged!");
 
 		} catch (IOException e) {
 			System.err.println("ERROR: Problem creating new file!");
