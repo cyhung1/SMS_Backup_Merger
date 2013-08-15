@@ -8,12 +8,10 @@ import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-
-// TODO need to update number of sms in file every time merge is run
-// TODO rename analyze to info
 
 public class FrontEnd {
 
@@ -21,7 +19,7 @@ public class FrontEnd {
 	private static final boolean DEBUG = true;
 	private static final ReadWrite READNWRITE = new ReadWrite();
 	private JFrame frame = new JFrame();
-	private JButton selectFile, compare, merge;
+	private JButton selectFile, compare, merge, extract;
 	private File[] files;
 
 	public FrontEnd() {
@@ -31,15 +29,17 @@ public class FrontEnd {
 	}
 
 	private void createGUI() {
-		JPanel main = new JPanel(new GridLayout(3, 1));
+		JPanel main = new JPanel(new GridLayout(4, 1));
 
 		selectFile = new JButton("Select File(s)");
 		compare = new JButton("Compare");
 		merge = new JButton("Merge");
+		extract = new JButton("Extract");
 
 		main.add(selectFile);
 		main.add(compare);
 		main.add(merge);
+		main.add(extract);
 
 		frame.add(main);
 	}
@@ -55,6 +55,7 @@ public class FrontEnd {
 							+ Arrays.toString(files));
 					compare.setEnabled(true);
 					merge.setEnabled(true);
+					extract.setEnabled(true);
 				}
 			}
 		});
@@ -83,6 +84,16 @@ public class FrontEnd {
 			}
 		});
 
+		extract.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String input = JOptionPane.showInputDialog(extract, "Please enter a phone number to extract:",
+						"1234567890");
+
+				//TODO should do verification of input in here
+				extractNumber(input);
+			}
+		});
 	}
 
 	private void init() {
@@ -94,6 +105,7 @@ public class FrontEnd {
 
 		compare.setEnabled(false);
 		merge.setEnabled(false);
+		extract.setEnabled(false);
 
 		frame.setTitle(System.getProperty("user.name") + " :: " + getClass().getName().substring(0, 6));
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -108,6 +120,10 @@ public class FrontEnd {
 
 	private void mergeFiles(File[] listOfFiles, File fileToSaveTo) {
 		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo);
+	}
+
+	private void extractNumber(String number) {
+		READNWRITE.extract(number);
 	}
 
 	public static void main(String[] args) {
