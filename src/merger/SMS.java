@@ -150,7 +150,7 @@ public class SMS {
 	 * @return formatted string in the format writing to file
 	 */
 	public String toFileString() {
-		return "<sms protocol=\"" + protocol + "\" address=\"" + address + "\" date=\"" + date + "\" type=\"" + type
+		return "  <sms protocol=\"" + protocol + "\" address=\"" + address + "\" date=\"" + date + "\" type=\"" + type
 				+ "\" subject=\"" + subject + "\" body=\"" + body + "\" toa=\"" + toa + "\" sc_toa=\"" + sc_toa
 				+ "\" service_center=\"" + service_center + "\" read=\"" + read + "\" status=\"" + status
 				+ "\" locked=\"" + locked + "\" date_sent=\"" + date_sent + "\" readable_date=\"" + readable_date
