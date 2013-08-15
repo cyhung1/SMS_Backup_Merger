@@ -25,6 +25,10 @@ public class SMS {
 	}
 
 	public void setAddress(String address) {
+		// Sanitize number input
+		address = address.replaceAll("[\\D]", "");
+		if (address.startsWith("1")) address = address.substring(1);
+
 		this.address = address;
 	}
 
@@ -131,7 +135,7 @@ public class SMS {
 	public void setContact_Name(String contact_name) {
 		this.contact_name = contact_name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Protocol: " + protocol + " address: " + address + " date: " + date + " type: " + type + " subject: "
@@ -147,8 +151,9 @@ public class SMS {
 	 */
 	public String toFileString() {
 		return "<sms protocol=\"" + protocol + "\" address=\"" + address + "\" date=\"" + date + "\" type=\"" + type
-				+ "\" subject=\"" + subject + "\" body=\"" + body + "\" toa=\"" + toa + "\" sc_toa=\"" + sc_toa + "\" service_center=\""
-				+ service_center + "\" read=\"" + read + "\" status=\"" + status + "\" locked=\"" + locked
-				+ "\" date_sent=\"" + date_sent + "\" readable_date=\"" + readable_date + "\" contact_name=\"" + contact_name + "\" />";
+				+ "\" subject=\"" + subject + "\" body=\"" + body + "\" toa=\"" + toa + "\" sc_toa=\"" + sc_toa
+				+ "\" service_center=\"" + service_center + "\" read=\"" + read + "\" status=\"" + status
+				+ "\" locked=\"" + locked + "\" date_sent=\"" + date_sent + "\" readable_date=\"" + readable_date
+				+ "\" contact_name=\"" + contact_name + "\" />";
 	}
 }
