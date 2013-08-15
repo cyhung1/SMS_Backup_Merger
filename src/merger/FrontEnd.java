@@ -87,7 +87,7 @@ public class FrontEnd {
 			public void actionPerformed(ActionEvent arg0) {
 				String input = JOptionPane.showInputDialog(extract, "Please enter a phone number to extract:",
 						"1234567890");
-				if (!input.matches("[0-9]") || input.length() != 9) return;
+				if (!input.matches("\\d{10}")) return;
 
 				File saveFile = null;
 
