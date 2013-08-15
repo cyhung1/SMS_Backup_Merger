@@ -51,8 +51,10 @@ public class FrontEnd {
 			public void actionPerformed(ActionEvent e) {
 				if (CHOOSER.showOpenDialog(selectFile) == JFileChooser.APPROVE_OPTION) {
 					files = CHOOSER.getSelectedFiles();
+
 					if (DEBUG) System.out.println("DEBUG: You selected: " + files.length + " files --> "
 							+ Arrays.toString(files));
+
 					compare.setEnabled(true);
 					merge.setEnabled(true);
 					extract.setEnabled(true);
@@ -74,11 +76,13 @@ public class FrontEnd {
 
 				if (CHOOSER.showSaveDialog(merge) == JFileChooser.APPROVE_OPTION) {
 					if (CHOOSER.getSelectedFile() != null) saveFile = CHOOSER.getSelectedFile();
+
 					if (DEBUG) System.out.println("DEBUG: Save to : " + saveFile.toPath());
 					if (DEBUG) System.out.println("DEBUG: Does save file exist?: " + saveFile.exists());
+
+					mergeFiles(files, saveFile, saveFile.getName());
 				}
 
-				mergeFiles(files, saveFile, saveFile.getName());
 			}
 		});
 
@@ -96,9 +100,10 @@ public class FrontEnd {
 
 					if (DEBUG) System.out.println("DEBUG: Save to : " + saveFile.toPath());
 					if (DEBUG) System.out.println("DEBUG: Does save file exist?: " + saveFile.exists());
+
+					extractNumber(files, input, saveFile.getName());
 				}
 
-				extractNumber(files, input, saveFile.getName());
 			}
 		});
 	}
