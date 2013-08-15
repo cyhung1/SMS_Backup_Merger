@@ -73,14 +73,12 @@ public class FrontEnd {
 				File saveFile = null;
 
 				if (CHOOSER.showSaveDialog(merge) == JFileChooser.APPROVE_OPTION) {
-					if (CHOOSER.getSelectedFile() != null) {
-						saveFile = CHOOSER.getSelectedFile();
-					}
+					if (CHOOSER.getSelectedFile() != null) saveFile = CHOOSER.getSelectedFile();
 					if (DEBUG) System.out.println("DEBUG: Save to : " + saveFile.toPath());
 					if (DEBUG) System.out.println("DEBUG: Does save file exist?: " + saveFile.exists());
 				}
 
-				mergeFiles(files, saveFile);
+				mergeFiles(files, saveFile, saveFile.getName());
 			}
 		});
 
@@ -89,9 +87,18 @@ public class FrontEnd {
 			public void actionPerformed(ActionEvent arg0) {
 				String input = JOptionPane.showInputDialog(extract, "Please enter a phone number to extract:",
 						"1234567890");
+				if (!input.matches("[0-9]") || input.length() != 9) return;
 
-				//TODO should do verification of input in here
-				extractNumber(files, input);
+				File saveFile = null;
+
+				if (CHOOSER.showSaveDialog(extract) == JFileChooser.APPROVE_OPTION) {
+					if (CHOOSER.getSelectedFile() != null) saveFile = CHOOSER.getSelectedFile();
+
+					if (DEBUG) System.out.println("DEBUG: Save to : " + saveFile.toPath());
+					if (DEBUG) System.out.println("DEBUG: Does save file exist?: " + saveFile.exists());
+				}
+
+				extractNumber(files, input, saveFile.getName());
 			}
 		});
 	}
@@ -118,12 +125,12 @@ public class FrontEnd {
 		READNWRITE.compare(listOfFiles);
 	}
 
-	private void mergeFiles(File[] listOfFiles, File fileToSaveTo) {
-		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo);
+	private void mergeFiles(File[] listOfFiles, File fileToSaveTo, String fileName) {
+		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo, fileName);
 	}
 
-	private void extractNumber(File[] listOfFiles, String number) {
-		READNWRITE.extract(listOfFiles, number);
+	private void extractNumber(File[] listOfFiles, String number, String fileName) {
+		READNWRITE.extract(listOfFiles, number, fileName);
 	}
 
 	public static void main(String[] args) {
