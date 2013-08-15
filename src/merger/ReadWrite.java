@@ -18,10 +18,10 @@ import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
-public class ReadWrite {
-	private final static Logger LOG = Logger.getLogger(ReadWrite.class.getName()); 
 
-	
+public class ReadWrite {
+	private final static Logger LOG = Logger.getLogger(ReadWrite.class.getName());
+
 	/**
 	 * --------------------------------- Read ---------------------------------
 	 */
@@ -167,7 +167,6 @@ public class ReadWrite {
 		for (SMS s : unsortedList) {
 			sortedList.add(s);
 		}
-
 		return sortedList;
 	}
 
@@ -175,23 +174,44 @@ public class ReadWrite {
 	 * --------------------------------- Write ---------------------------------
 	 */
 
-	public void mergeToArchive(File[] listOfFiles, File fileToSaveTo) {
+	public void mergeToArchive(File[] listOfFiles, File fileToSaveTo, String fileName) {
 		ArrayList<SMS> fullList = new ArrayList<SMS>();
 		TreeSet<SMS> fullSortedList = new TreeSet<SMS>();
-		
+
 		for (File f : listOfFiles) {
 			fullList.addAll(gatherSMSFromFile(f));
 		}
-		
+
 		fullSortedList = sortSMS(fullList);
 
-		writeToFile(fullSortedList);
+		writeToFile(fullSortedList, fileName);
 	}
 
-	private void writeToFile(TreeSet<SMS> list) {
+	public void extract(File[] listOfFiles, String number, String fileName) {
+		ArrayList<SMS> fullList = new ArrayList<SMS>();
+		ArrayList<SMS> chosenList = new ArrayList<SMS>();
+		TreeSet<SMS> fullSortedList = new TreeSet<SMS>();
+
+		for (File f : listOfFiles) {
+			fullList.addAll(gatherSMSFromFile(f));
+		}
+
+		// Gather selected numbers
+		for (SMS s : fullList) {
+			if (s.getAddress().equals(number)) chosenList.add(s);
+		}
+
+		fullSortedList = sortSMS(chosenList);
+
+		writeToFile(fullSortedList, fileName);
+	}
+
+	private void writeToFile(TreeSet<SMS> list, String fileName) {
 		try {
 
-			File archive = new File(System.getProperty("user.home") + File.separator + "archive.xml");
+			if (!fileName.endsWith(".xml")) fileName += ".xml";
+
+			File archive = new File(System.getProperty("user.home") + File.separator + fileName);
 
 			if (!archive.exists()) archive.createNewFile();
 
