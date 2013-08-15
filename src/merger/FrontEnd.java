@@ -91,7 +91,7 @@ public class FrontEnd {
 						"1234567890");
 
 				//TODO should do verification of input in here
-				extractNumber(input);
+				extractNumber(files, input);
 			}
 		});
 	}
@@ -122,8 +122,8 @@ public class FrontEnd {
 		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo);
 	}
 
-	private void extractNumber(String number) {
-		READNWRITE.extract(number);
+	private void extractNumber(File[] listOfFiles, String number) {
+		READNWRITE.extract(listOfFiles, number);
 	}
 
 	public static void main(String[] args) {
