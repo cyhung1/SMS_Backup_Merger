@@ -19,8 +19,7 @@ public class FrontEnd {
 
 	private static final JFileChooser CHOOSER = new JFileChooser();
 	private static final boolean DEBUG = true;
-	private static final Read READ = new Read();
-	private static final Write WRITE = new Write();
+	private static final ReadWrite READNWRITE = new ReadWrite();
 	private JFrame frame = new JFrame();
 	private JButton selectFile, compare, merge;
 	private File[] files;
@@ -104,11 +103,11 @@ public class FrontEnd {
 	}
 
 	private void compareFiles(File[] listOfFiles) {
-		READ.compare(listOfFiles);
+		READNWRITE.compare(listOfFiles);
 	}
 
 	private void mergeFiles(File[] listOfFiles, File fileToSaveTo) {
-		WRITE.mergeToArchive(listOfFiles, fileToSaveTo);
+		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo);
 	}
 
 	public static void main(String[] args) {
