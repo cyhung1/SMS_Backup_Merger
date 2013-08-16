@@ -19,7 +19,7 @@ public class FrontEnd {
 	private static final boolean DEBUG = true;
 	private static final ReadWrite READNWRITE = new ReadWrite();
 	private JFrame frame = new JFrame();
-	private JButton selectFile, compare, merge, extract;
+	private JButton selectFile, info, merge, extract;
 	private File[] files;
 
 	public FrontEnd() {
@@ -32,12 +32,12 @@ public class FrontEnd {
 		JPanel main = new JPanel(new GridLayout(4, 1));
 
 		selectFile = new JButton("Select File(s)");
-		compare = new JButton("Compare");
+		info = new JButton("Info");
 		merge = new JButton("Merge");
-		extract = new JButton("Extract");
+		extract = new JButton("Extract #");
 
 		main.add(selectFile);
-		main.add(compare);
+		main.add(info);
 		main.add(merge);
 		main.add(extract);
 
@@ -55,17 +55,17 @@ public class FrontEnd {
 					if (DEBUG) System.out.println("DEBUG: You selected: " + files.length + " files --> "
 							+ Arrays.toString(files));
 
-					compare.setEnabled(true);
+					info.setEnabled(true);
 					merge.setEnabled(true);
 					extract.setEnabled(true);
 				}
 			}
 		});
 
-		compare.addActionListener(new ActionListener() {
+		info.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				compareFiles(files);
+				infoFiles(files);
 			}
 		});
 
@@ -115,7 +115,7 @@ public class FrontEnd {
 		CHOOSER.setCurrentDirectory(new File(System.getProperty("user.home")));
 		CHOOSER.setMultiSelectionEnabled(true); // Allow multiple file selection
 
-		compare.setEnabled(false);
+		info.setEnabled(false);
 		merge.setEnabled(false);
 		extract.setEnabled(false);
 
@@ -126,8 +126,8 @@ public class FrontEnd {
 		frame.setVisible(true);
 	}
 
-	private void compareFiles(File[] listOfFiles) {
-		READNWRITE.compare(listOfFiles);
+	private void infoFiles(File[] listOfFiles) {
+		READNWRITE.info(listOfFiles);
 	}
 
 	private void mergeFiles(File[] listOfFiles, File fileToSaveTo, String fileName) {

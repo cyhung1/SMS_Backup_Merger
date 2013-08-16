@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.TreeSet;
-import java.util.logging.Logger;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -20,7 +19,7 @@ import javax.xml.stream.events.XMLEvent;
 
 
 public class ReadWrite {
-	private final static Logger LOG = Logger.getLogger(ReadWrite.class.getName());
+	private static final boolean DEBUG = true;
 	private static final XMLInputFactory XMLINFACTORY = XMLInputFactory.newInstance();
 
 	/**
@@ -33,25 +32,52 @@ public class ReadWrite {
 	 * @param listOfFiles
 	 *            list of xml files to be compared
 	 */
-	public void compare(File[] listOfFiles) {
+	public void info(File[] listOfFiles) {
+		int totalNumChars = 0;
+		int totalSentChars = 0;
+		int totalRecievedChars = 0;
+		int totalSent = 0;
+		int totalRecieved = 0;
+		int totalWords = 0;
+		ArrayList<String> contactList = new ArrayList<String>();
+
 		if (!(listOfFiles.length > 0)) return; // Files must exist
 
 		for (File f : listOfFiles) { // Files must not be null
 			if (f == null) return;
 		}
 
-		//TODO info gathered might need to be displayed in a JDialog instead of system console
 		//TESTING CODE
 		ArrayList<SMS> list = new ArrayList<SMS>();
 		for (File f : listOfFiles) {
 			list = gatherSMSFromFile(f);
+
+			for (SMS s : list) {
+				if (!contactList.contains(s.getAddress())) contactList.add(s.getAddress());
+
+				if (s.getType().equals("1")) {
+					totalRecieved++;
+					totalRecievedChars += s.getBody().length();
+				}
+				if (s.getType().equals("2")) {
+					totalSent++;
+					totalSentChars += s.getBody().length();
+				}
+				totalNumChars += s.getBody().length();
+				totalWords += s.getBody().replaceAll("[^ ]", "").length() + 1;
+			}
 		}
 
-		for (SMS sms : list) {
-			System.out.println(sms.toFileString());
-		}
+		System.out.println("INFO: " + (totalSent + totalRecieved) + " : total messages");
+		System.out.println("INFO: " + totalSent + " : messages sent");
+		System.out.println("INFO: " + totalRecieved + " : messages recieved");
+		System.out.println("INFO: " + totalWords + " : total words");
+		System.out.println("INFO: " + totalNumChars + " : total letters");
+		System.out.println("INFO: " + totalSentChars + " : total letters sent");
+		System.out.println("INFO: " + totalRecievedChars + " : total letters recieved");
+		System.out.println("INFO: " + contactList.size() + " : unique contacts");
+
 		//ENDTESTINGCODE
-
 	}
 
 	/**
@@ -118,7 +144,7 @@ public class ReadWrite {
 				sms.setSubject(attribute.getValue());
 				break;
 			case "body":
-				sms.setBody(attribute.getValue().replace("\n", ""));
+				sms.setBody(attribute.getValue());
 				break;
 			case "toa":
 				sms.setToa(attribute.getValue());
@@ -166,6 +192,7 @@ public class ReadWrite {
 		for (SMS s : unsortedList) {
 			sortedList.add(s);
 		}
+
 		return sortedList;
 	}
 
@@ -230,7 +257,7 @@ public class ReadWrite {
 
 			writer.close();
 
-			LOG.info("Files Merged!");
+			if (DEBUG) System.out.println("INFO: Files Merged!");
 
 		} catch (IOException e) {
 			System.err.println("ERROR: Problem creating new file!");
