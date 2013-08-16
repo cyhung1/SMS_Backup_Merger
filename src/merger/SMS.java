@@ -61,7 +61,7 @@ public class SMS {
 	}
 
 	public void setBody(String body) {
-		this.body = body;
+		this.body = body.replace("\n", "");
 	}
 
 	public String getToa() {
