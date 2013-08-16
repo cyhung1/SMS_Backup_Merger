@@ -47,8 +47,7 @@ public class ReadWrite {
 			if (f == null) return;
 		}
 
-		//TESTING CODE
-		ArrayList<SMS> list = new ArrayList<SMS>();
+		TreeSet<SMS> list = new TreeSet<SMS>();
 		for (File f : listOfFiles) {
 			list = gatherSMSFromFile(f);
 
@@ -77,19 +76,26 @@ public class ReadWrite {
 		System.out.println("INFO: " + totalRecievedChars + " : total letters recieved");
 		System.out.println("INFO: " + contactList.size() + " : unique contacts");
 
-		//ENDTESTINGCODE
 	}
 
 	/**
-	 * Helper Method - Take xml file and parse all the sms nodes in it into a
-	 * sms object and store them in an arraylist
+	 * Helper - Take xml file and parse all the sms nodes in it into a sms
+	 * object and store them in an arraylist
 	 * 
 	 * @param xmlFile
 	 *            passed in xml file
 	 * @return list of sms nodes
 	 */
-	private ArrayList<SMS> gatherSMSFromFile(File xmlFile) {
-		ArrayList<SMS> smsList = new ArrayList<SMS>();
+	private TreeSet<SMS> gatherSMSFromFile(File xmlFile) {
+		TreeSet<SMS> smsList = new TreeSet<>(new Comparator<SMS>() {
+			@Override
+			public int compare(SMS first, SMS second) {
+				int ret = first.getDate().compareTo(second.getDate());
+				if (ret == 0) ret = first.getBody().compareTo(second.getBody());
+				return ret;
+			}
+		});
+
 		try {
 			XMLEventReader eventReader = XMLINFACTORY.createXMLEventReader(new FileInputStream(xmlFile));
 
@@ -118,7 +124,7 @@ public class ReadWrite {
 	}
 
 	/**
-	 * Helper method - Creates a new sms with given content attributes
+	 * Helper - Creates a new sms with given content attributes
 	 * 
 	 * @return new sms node
 	 */
@@ -179,44 +185,43 @@ public class ReadWrite {
 		return sms;
 	}
 
-	private TreeSet<SMS> sortSMS(ArrayList<SMS> unsortedList) {
-		TreeSet<SMS> sortedList = new TreeSet<>(new Comparator<SMS>() {
-			@Override
-			public int compare(SMS first, SMS second) {
-				int ret = first.getDate().compareTo(second.getDate());
-				if (ret == 0) ret = first.getBody().compareTo(second.getBody());
-				return ret;
-			}
-		});
-
-		for (SMS s : unsortedList) {
-			sortedList.add(s);
-		}
-
-		return sortedList;
-	}
-
 	/**
 	 * --------------------------------- Write ---------------------------------
 	 */
 
+	/**
+	 * Merges the list of given files together to write to given file
+	 * 
+	 * @param listOfFiles
+	 *            given files chosen by user
+	 * @param fileToSaveTo
+	 *            file selected to save to
+	 * @param fileName
+	 *            filename given by user
+	 */
 	public void mergeToArchive(File[] listOfFiles, File fileToSaveTo, String fileName) {
-		ArrayList<SMS> fullList = new ArrayList<SMS>();
-		TreeSet<SMS> fullSortedList = new TreeSet<SMS>();
+		TreeSet<SMS> fullList = new TreeSet<SMS>();
 
 		for (File f : listOfFiles) {
 			fullList.addAll(gatherSMSFromFile(f));
 		}
 
-		fullSortedList = sortSMS(fullList);
-
-		writeToFile(fullSortedList, fileName);
+		writeToFile(fullList, fileName);
 	}
 
+	/**
+	 * Extract all sms's with given phone number from the input files
+	 * 
+	 * @param listOfFiles
+	 *            files to search for number
+	 * @param number
+	 *            number to search for
+	 * @param fileName
+	 *            file to write conversation to
+	 */
 	public void extract(File[] listOfFiles, String number, String fileName) {
-		ArrayList<SMS> fullList = new ArrayList<SMS>();
-		ArrayList<SMS> chosenList = new ArrayList<SMS>();
-		TreeSet<SMS> fullSortedList = new TreeSet<SMS>();
+		TreeSet<SMS> fullList = new TreeSet<SMS>();
+		TreeSet<SMS> chosenList = new TreeSet<SMS>();
 
 		for (File f : listOfFiles) {
 			fullList.addAll(gatherSMSFromFile(f));
@@ -227,11 +232,17 @@ public class ReadWrite {
 			if (s.getAddress().equals(number)) chosenList.add(s);
 		}
 
-		fullSortedList = sortSMS(chosenList);
-
-		writeToFile(fullSortedList, fileName);
+		writeToFile(chosenList, fileName);
 	}
 
+	/**
+	 * Helper - Writes gathered coversations to file
+	 * 
+	 * @param list
+	 *            final sorted list of sms
+	 * @param fileName
+	 *            file to write list to
+	 */
 	private void writeToFile(TreeSet<SMS> list, String fileName) {
 		try {
 
