@@ -21,12 +21,11 @@ import javax.xml.stream.events.XMLEvent;
 
 public class ReadWrite {
 	private final static Logger LOG = Logger.getLogger(ReadWrite.class.getName());
+	private static final XMLInputFactory XMLINFACTORY = XMLInputFactory.newInstance();
 
 	/**
 	 * --------------------------------- Read ---------------------------------
 	 */
-
-	private static final XMLInputFactory XMLINFACTORY = XMLInputFactory.newInstance();
 
 	/**
 	 * Gather and compare contents of xml sms files
@@ -119,7 +118,7 @@ public class ReadWrite {
 				sms.setSubject(attribute.getValue());
 				break;
 			case "body":
-				sms.setBody(attribute.getValue());
+				sms.setBody(attribute.getValue().replace("\n", ""));
 				break;
 			case "toa":
 				sms.setToa(attribute.getValue());
