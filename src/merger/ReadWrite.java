@@ -200,10 +200,15 @@ public class ReadWrite {
 	 *            filename given by user
 	 */
 	public void mergeToArchive(File[] listOfFiles, File fileToSaveTo, String fileName) {
-		TreeSet<SMS> fullList = new TreeSet<SMS>();
+		//TreeSet<SMS> fullList = new TreeSet<SMS>();
+		ArrayList<SMS> fullList = new ArrayList<SMS>();
 
 		for (File f : listOfFiles) {
-			fullList.addAll(gatherSMSFromFile(f));
+			TreeSet<SMS> gatheredSet = gatherSMSFromFile(f);
+
+			for (SMS s : gatheredSet) {
+				fullList.add(s);
+			}
 		}
 
 		writeToFile(fullList, fileName);
@@ -220,17 +225,17 @@ public class ReadWrite {
 	 *            file to write conversation to
 	 */
 	public void extract(File[] listOfFiles, String number, String fileName) {
-		TreeSet<SMS> fullList = new TreeSet<SMS>();
-		TreeSet<SMS> chosenList = new TreeSet<SMS>();
+		ArrayList<SMS> chosenList = new ArrayList<SMS>();
 
 		for (File f : listOfFiles) {
-			fullList.addAll(gatherSMSFromFile(f));
+			TreeSet<SMS> gatheredSet = gatherSMSFromFile(f);
+
+			for (SMS s : gatheredSet) {
+				if (s.getAddress().equals(number)) chosenList.add(s);
+			}
 		}
 
 		// Gather selected numbers
-		for (SMS s : fullList) {
-			if (s.getAddress().equals(number)) chosenList.add(s);
-		}
 
 		writeToFile(chosenList, fileName);
 	}
@@ -243,7 +248,7 @@ public class ReadWrite {
 	 * @param fileName
 	 *            file to write list to
 	 */
-	private void writeToFile(TreeSet<SMS> list, String fileName) {
+	private void writeToFile(ArrayList<SMS> list, String fileName) {
 		try {
 
 			if (!fileName.endsWith(".xml")) fileName += ".xml";
@@ -258,11 +263,16 @@ public class ReadWrite {
 			writer.write("<?xml-stylesheet type=\"text/xsl\" href=\"sms.xsl\"?>\n");
 			writer.write("<smses count=\"" + list.size() + "\">\n");
 
-			Iterator<SMS> iterator = list.iterator();
-			while (iterator.hasNext()) {
-				writer.write(iterator.next().toFileString());
+			for (SMS s : list) {
+				writer.write(s.toFileString());
 				writer.newLine();
 			}
+
+			/*
+			 * Iterator<SMS> iterator = list.iterator(); while
+			 * (iterator.hasNext()) {
+			 * writer.write(iterator.next().toFileString()); writer.newLine(); }
+			 */
 
 			writer.write("</smses>");
 
