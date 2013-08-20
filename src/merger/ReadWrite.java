@@ -240,6 +240,10 @@ public class ReadWrite {
 		writeToFile(chosenList, fileName);
 	}
 
+	public void createMessage(String address, String date, String type, String body, String read) {
+
+	}
+
 	/**
 	 * Helper - Writes gathered coversations to file
 	 * 

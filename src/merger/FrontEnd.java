@@ -6,10 +6,12 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 
@@ -17,9 +19,9 @@ public class FrontEnd {
 
 	private static final JFileChooser CHOOSER = new JFileChooser();
 	private static final boolean DEBUG = true;
-	private static final ReadWrite READNWRITE = new ReadWrite();
-	private JFrame frame = new JFrame();
-	private JButton selectFile, info, merge, extract;
+	private static final ReadWrite READ_WRITE = new ReadWrite();
+	private static final JFrame FRAME = new JFrame();
+	private JButton selectFile, info, merge, extract, create;
 	private File[] files;
 
 	public FrontEnd() {
@@ -29,19 +31,21 @@ public class FrontEnd {
 	}
 
 	private void createGUI() {
-		JPanel main = new JPanel(new GridLayout(4, 1));
+		JPanel main = new JPanel(new GridLayout(5, 1));
 
 		selectFile = new JButton("Select File(s)");
 		info = new JButton("Info");
 		merge = new JButton("Merge");
 		extract = new JButton("Extract #");
+		create = new JButton("Create");
 
 		main.add(selectFile);
 		main.add(info);
 		main.add(merge);
 		main.add(extract);
+		main.add(create);
 
-		frame.add(main);
+		FRAME.add(main);
 	}
 
 	private void addListeners() {
@@ -58,6 +62,7 @@ public class FrontEnd {
 					info.setEnabled(true);
 					merge.setEnabled(true);
 					extract.setEnabled(true);
+					create.setEnabled(true);
 				}
 			}
 		});
@@ -106,6 +111,28 @@ public class FrontEnd {
 
 			}
 		});
+
+		create.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JDialog dialog = new JDialog(FRAME);
+				dialog.setLayout(new GridLayout(5, 1));
+
+				JTextField address = new JTextField("address");
+				JTextField date = new JTextField("date");
+				JTextField type = new JTextField("type");
+				JTextField body = new JTextField("body");
+				JTextField read = new JTextField("read");
+
+				dialog.add(address);
+				dialog.add(date);
+				dialog.add(type);
+				dialog.add(body);
+				dialog.add(read);
+
+				//createMessage();
+			}
+		});
 	}
 
 	private void init() {
@@ -118,24 +145,29 @@ public class FrontEnd {
 		info.setEnabled(false);
 		merge.setEnabled(false);
 		extract.setEnabled(false);
+		create.setEnabled(false);
 
-		frame.setTitle(System.getProperty("user.name") + " :: " + getClass().getName().substring(0, 6));
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocationRelativeTo(null); // Center of screen
-		frame.pack();
-		frame.setVisible(true);
+		FRAME.setTitle(System.getProperty("user.name") + " :: " + getClass().getName().substring(0, 6));
+		FRAME.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		FRAME.setLocationRelativeTo(null); // Center of screen
+		FRAME.pack();
+		FRAME.setVisible(true);
 	}
 
 	private void infoFiles(File[] listOfFiles) {
-		READNWRITE.info(listOfFiles);
+		READ_WRITE.info(listOfFiles);
 	}
 
 	private void mergeFiles(File[] listOfFiles, File fileToSaveTo, String fileName) {
-		READNWRITE.mergeToArchive(listOfFiles, fileToSaveTo, fileName);
+		READ_WRITE.mergeToArchive(listOfFiles, fileToSaveTo, fileName);
 	}
 
 	private void extractNumber(File[] listOfFiles, String number, String fileName) {
-		READNWRITE.extract(listOfFiles, number, fileName);
+		READ_WRITE.extract(listOfFiles, number, fileName);
+	}
+
+	private void createMessage(String address, String date, String type, String body, String read) {
+		READ_WRITE.createMessage(address, date, type, body, read);
 	}
 
 	public static void main(String[] args) {
