@@ -241,6 +241,21 @@ public class ReadWrite {
 	}
 
 	public void createMessage(String address, String date, String type, String body, String read) {
+		SMS createdSMS = new SMS();
+		createdSMS.setProtocol("0");
+		createdSMS.setAddress(address);
+		createdSMS.setDate(date);
+		createdSMS.setType(type);
+		if (type.equals("1")) createdSMS.setSubject("null");
+		else createdSMS.setSubject("0,0,0,0");
+		createdSMS.setBody(body);
+		createdSMS.setToa(null);
+		createdSMS.setSc_toa(null);
+		createdSMS.setService_Center(null);
+		createdSMS.setRead(read);
+		createdSMS.setStatus("-1");
+		createdSMS.setLocked("0");
+		createdSMS.setDate_Sent("null");
 
 	}
 
